@@ -1,1 +1,4 @@
 env
+/safecoin/media/
+/safecoin/db.sqlite3
+/test.py
