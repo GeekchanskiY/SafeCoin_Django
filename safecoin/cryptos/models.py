@@ -11,6 +11,7 @@ class Crypto(models.Model):
     volume = models.FloatField(default=0.0)
     circulating_supply = models.FloatField(default=0.0)
     market_cap = models.FloatField(default=0.0)
+    transactions_count = models.IntegerField(default=0)
     current_price = models.FloatField()
 
     objects = models.Manager()
