@@ -1,5 +1,6 @@
 from rest_framework import viewsets
-from .serializers import CryptoSerializer, CryptoNewsSerializer, CryptoSearchSerializer
+from .serializers import CryptoSerializer, CryptoNewsSerializer,\
+    CryptoSearchSerializer, CryptoPricePointSerializer
 from .models import Crypto, CryptoNews, CrytoPricePoint
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -35,6 +36,14 @@ class CryptoViewSet(viewsets.ModelViewSet):
             serializer = CryptoSerializer(list(self.queryset), many=True)
             return Response({"data": serializer.data}, status=status.HTTP_200_OK)
 
+    @action(methods=['get'], detail=True, name='price_points')
+    def price_points(self, request, name=None):
+        crypto = Crypto.objects.get(name=name)
+        points = CrytoPricePoint.objects.filter(crypto=crypto)
+        serializer = CryptoPricePointSerializer(points, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 class CryptoNewsViewSet(viewsets.ModelViewSet):
     queryset = CryptoNews.objects.all()
@@ -50,6 +59,5 @@ class CryptoNewsViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
-
 
 
