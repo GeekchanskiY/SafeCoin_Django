@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from cryptos.views import CryptoViewSet, CryptoNewsViewSet
+from  users.views import UserViewSet
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -27,6 +28,7 @@ from rest_framework_simplejwt.views import (
 router = routers.DefaultRouter()
 router.register(r'cryptos', CryptoViewSet)
 router.register(r'news', CryptoNewsViewSet)
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
