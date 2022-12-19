@@ -41,5 +41,43 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(methods=['post'], detail=False, name='change_password', serializer_class=UserSerializer)
+    def change_password(self, request):
+        data = request.data
+        user: SCUser = request.user
+        try:
+            user.set_password(data["password"])
+        except AttributeError:
+            return Response({"detail": "no new password provided"}, status=status.HTTP_400_BAD_REQUEST)
+        user.save()
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False, name='change_country', serializer_class=UserSerializer)
+    def change_country(self, request):
+        data = request.data
+        user: SCUser = request.user
+        try:
+            user.country = data["country"]
+            user.save()
+        except AttributeError:
+            return Response({"detail": "no country provided"})
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False, name='change_about_me', serializer_class=UserSerializer)
+    def change_about_me(self, request):
+        data = request.data
+        user: SCUser = request.user
+        try:
+            user.about_me = data["about_me"]
+            user.save()
+        except AttributeError:
+            return Response({"detail": "no about_me provided"})
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 
 
