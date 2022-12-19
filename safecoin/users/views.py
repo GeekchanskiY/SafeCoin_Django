@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.parsers import FormParser, FileUploadParser
+from rest_framework.decorators import parser_classes
 from django.db.models import Q
 
 
@@ -13,8 +14,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
     permission_classes = [permissions.IsAuthenticated]
-    parser_classes = [FormParser, FileUploadParser]
-
 
     def get_permissions(self):
         """
@@ -105,7 +104,8 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False, name='change_avatar', serializer_class=UserSerializer)
+    @action(methods=['post'], detail=False, name='change_avatar',
+            serializer_class=UserSerializer, parser_classes=[FileUploadParser])
     def change_avatar(self, request):
         user = request.user
         try:
