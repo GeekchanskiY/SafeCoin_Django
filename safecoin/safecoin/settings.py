@@ -36,6 +36,18 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",
 ]
 CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_HEADERS = ["accept",
+                      "accept-encoding",
+                      "authorization",
+                      "content-type",
+                      "dnt",
+                      "origin",
+                      "user-agent",
+                      "x-csrftoken",
+                      "x-requested-with",
+                      "Access-Control-Allow-Headers",
+                      "Content-Disposition"
+                      ]
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
