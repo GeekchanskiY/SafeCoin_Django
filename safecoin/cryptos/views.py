@@ -37,11 +37,15 @@ class CryptoViewSet(viewsets.ModelViewSet):
             serializer = CryptoSerializer(list(self.queryset), many=True)
             return Response({"data": serializer.data}, status=status.HTTP_200_OK)
 
-    @action(methods=['get'], detail=True, name='price_points')
+    @action(methods=['post'], detail=True, name='price_points')
     def price_points(self, request, name=None):
-        
+        data = request.data
         crypto = Crypto.objects.get(name=name)
-        points = CrytoPricePoint.objects.filter(crypto=crypto)[0:30]
+        try:
+            points = CrytoPricePoint.objects.filter(crypto=crypto)[30*(data["page"]-1):30*(data["page"])]
+        except KeyError:
+            return Response({"error": "page must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = CryptoPricePointSerializer(points, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
