@@ -39,8 +39,9 @@ class CryptoViewSet(viewsets.ModelViewSet):
 
     @action(methods=['get'], detail=True, name='price_points')
     def price_points(self, request, name=None):
+        
         crypto = Crypto.objects.get(name=name)
-        points = CrytoPricePoint.objects.filter(crypto=crypto)
+        points = CrytoPricePoint.objects.filter(crypto=crypto)[0:30]
         serializer = CryptoPricePointSerializer(points, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
