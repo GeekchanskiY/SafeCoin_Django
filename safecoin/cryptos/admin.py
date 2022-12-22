@@ -4,7 +4,8 @@ from .models import Crypto, CryptoNews, CrytoPricePoint
 
 @admin.register(Crypto)
 class CryptoAdmin(admin.ModelAdmin):
-    fields = ('name', 'code', 'image', 'description', 'current_price', 'id')
+    fields = ('name', 'code', 'image', 'circulating_supply', 'volume', 'market_cap', 'transactions_count',
+              'description', 'current_price', 'id')
     list_display = ('name', 'code')
     search_fields = ('name', 'code')
     readonly_fields = ('id',)
