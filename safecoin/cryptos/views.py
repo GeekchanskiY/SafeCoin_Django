@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.db.models import Q
 from rest_framework import pagination
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class CryptoViewSet(viewsets.ModelViewSet):
@@ -40,11 +41,16 @@ class CryptoViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True, name='price_points')
     def price_points(self, request, name=None):
         data = request.data
-        crypto = Crypto.objects.get(name=name)
+        try:
+            crypto = Crypto.objects.get(name=name)
+        except:
+            return Response({"error": f"no coin with name {name}"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             points = CrytoPricePoint.objects.filter(crypto=crypto)[30*(data["page"]-1):30*(data["page"])]
-        except KeyError:
-            return Response({"error": "page must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+            if len(points) < 20:
+                raise Exception()
+        except:
+            return Response({"error": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = CryptoPricePointSerializer(points, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
