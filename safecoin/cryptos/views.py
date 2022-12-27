@@ -29,14 +29,31 @@ class CryptoViewSet(viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=False, name='search', serializer_class=CryptoSearchSerializer)
     def search(self, request):
-        data = request.data.get('search', None)
-        if data is not None:
-            serializer = CryptoSerializer(list(self.queryset.filter(Q(name__contains=data)|Q(code__contains=data))), many=True)
+        name = request.data.get('search', None)
+        min_price = request.data.get('min_price', None)
+        max_price = request.data.get('max_price', None)
+        min_cap = request.data.get('min_cap', None)
+        max_cap = request.data.get('max_cap', None)
 
-            return Response({"data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            serializer = CryptoSerializer(list(self.queryset), many=True)
-            return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+        queryset = self.queryset
+        if name is not None:
+            queryset = queryset.filter(Q(name__contains=name) | Q(code__contains=name))
+
+        if min_price is not None:
+            queryset = queryset.filter(current_price__gte=min_price)
+
+        if max_price is not None:
+            queryset = queryset.filter(current_price__lte=max_price)
+
+        if max_cap is not None:
+            queryset = queryset.filter(market_cap__lte=max_cap)
+
+        if min_cap is not None:
+            queryset = queryset.filter(market_cap__gte=min_cap)
+
+        serializer = CryptoSerializer(queryset, many=True)
+
+        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, name='price_points')
     def price_points(self, request, name=None):
@@ -54,6 +71,24 @@ class CryptoViewSet(viewsets.ModelViewSet):
 
         serializer = CryptoPricePointSerializer(points, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False, name='filter_cryptos')
+    def filter_cryptos(self, request):
+        data: dict = request.data
+        name = data.get("name", None)
+        min_price = data.get("min_price", None)
+        max_price = data.get("max_price", None)
+        min_cap = data.get("min_cap", None)
+        max_cap = data.get("max_cap", None)
+
+        queryset = self.queryset
+        if name is not None:
+            queryset = queryset.filter(name__icontains=name)
+        if min_price is not None:
+            queryset = queryset.filter(price__gte=min_price)
+        if max_price is not None:
+            queryset = queryset.filter(price__lte=max_price)
+        
 
 
 class NewsPagination(pagination.PageNumberPagination):
